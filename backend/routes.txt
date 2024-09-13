@@ -1,0 +1,27 @@
+/api/users
+/api/cart
+/api/products
+
+
+
+-----------------------------------------
+
+/api/users/register
+/api/users/login
+/api/users/current
+
+-----------------------------------------
+
+/api/cart/ -> get the user cart
+/api/cart/:id -> delete cart item
+
+-----------------------------------------
+
+/api/products/ -> get all products
+/api/products/:id -> get a specific products
+
+/api/products/ -> post a product
+/api/products/:id -> update/put a product
+/api/products/:id -> delete a product
+
+-----------------------------------------
