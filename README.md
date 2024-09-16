@@ -113,27 +113,22 @@ You can interact with the application through the web interface or directly thro
 Here are some key API endpoints for the project:
 
 - **User Routes**
-  - `POST /api/users/register`: Register a new user
-  - `POST /api/users/login`: Log in a user
-  - `GET /api/users/profile`: Get user profile
+  - `GET /api/users/current`: Get Current user profile - `PRIVATE`
+  - `POST /api/users/register`: Register a new user - `PUBLIC`
+  - `POST /api/users/login`: Log in a user  - `PUBLIC`
+  - `GET /api/users/` : Get the List of the users - `PRIVATE`
 
 - **Cart Routes**
-  - `GET /api/cart`: Get the current user's cart
-  - `POST /api/cart`: Add an item to the cart
-  - `PUT /api/cart/:id`: Update item quantity in the cart
-  - `DELETE /api/cart/:id`: Remove an item from the cart
+  - `GET /api/cart`: Get the current user's cart - `PRIVATE`
+  - `POST /api/cart`: Add an item to the cart - `PRIVATE`
+  - `DELETE /api/cart/:id`: Remove an item from the cart - `PRIVATE`
 
 - **Product Routes**
-  - `GET /api/products`: Get a list of products
-  - `GET /api/products/:id`: Get product details
-  - `POST /api/products`: Add a new product (Admin only)
-  - `PUT /api/products/:id`: Update a product (Admin only)
-  - `DELETE /api/products/:id`: Delete a product (Admin only)
-
-- **Admin Routes**
-  - `GET /api/admin/dashboard`: Get admin dashboard data
-  - `GET /api/admin/users`: List all users (Admin only)
-  - `GET /api/admin/products`: List all products (Admin only)
+  - `GET /api/products`: Get all list of products - `PUBLIC`
+  - `GET /api/products/:id`: Get product details - `PRIVATE`
+  - `POST /api/products`: Add a new product (Admin only) - `Admin`- `PRIVATE`
+  - `PUT /api/products/:id`: Update a product (Admin only) - `Admin` - `PRIVATE`
+  - `DELETE /api/products/:id`: Delete a product (Admin only) - `Admin` - `PRIVATE`
 
 # NOTE - Functionality Remaining
 Image upload functionality still remaining
