@@ -1,87 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import NewsLetter from "./commons/NewsLetter";
+import { Link } from "react-router-dom";
 
 function ShopPage() {
-  const productItems = [
-    {
-      img: "/images/home/product1.jpg",
-      name: "Product 1",
-      price: "$50",
-      rating: 4,
-    },
-    {
-      img: "/images/home/product2.jpg",
-      name: "Product 2",
-      price: "$65",
-      rating: 5,
-    },
-    {
-      img: "/images/home/product3.jpg",
-      name: "Product 3",
-      price: "$80",
-      rating: 3,
-    },
-    {
-      img: "/images/home/product4.jpg",
-      name: "Product 4",
-      price: "$95",
-      rating: 4,
-    },
-    {
-      img: "/images/home/product5.jpg",
-      name: "Product 5",
-      price: "$70",
-      rating: 5,
-    },
-    {
-      img: "/images/home/product5.jpg",
-      name: "Product 6",
-      price: "$70",
-      rating: 3.4,
-    },
-    {
-      img: "/images/home/product5.jpg",
-      name: "Product 7",
-      price: "$70",
-      rating: 2,
-    },
-    {
-      img: "/images/home/product5.jpg",
-      name: "Product 8",
-      price: "$60",
-      rating: 4.5,
-    },
-    {
-      img: "/images/home/product5.jpg",
-      name: "Product 9",
-      price: "$40",
-      rating: 3.8,
-    },
-    {
-      img: "/images/home/product5.jpg",
-      name: "Product 10",
-      price: "$30",
-      rating: 4,
-    },
-    {
-      img: "/images/home/product5.jpg",
-      name: "Product 11",
-      price: "$25",
-      rating: 4.3,
-    },
-    {
-      img: "/images/home/product5.jpg",
-      name: "Product 12",
-      price: "$90",
-      rating: 5,
-    },
-  ];
-
+  const [productItems, setProductItems] = useState([]);
   const [visibleProducts, setVisibleProducts] = useState(8);
+
+  // Fetch products from the backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:9000/api/products");
+        if (response.ok) {
+          const products = await response.json();
+          setProductItems(products);
+        } else {
+          console.error("Failed to fetch products");
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleShowMore = () => {
     setVisibleProducts((prevCount) => prevCount + 4); // Load 4 more products each time
+  };
+
+  const handleAddToCart = async (productId) => {
+    // getting the token from local storage/session storage
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    try {
+      const response = await fetch("http://localhost:9000/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // token retrieval
+        },
+        body: JSON.stringify({ product_id: productId, quantity: 1 }),
+      });
+
+      if (response.ok) {
+        alert("Item added to cart");
+      } else {
+        console.error("Failed to add item to cart");
+      }
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+    }
   };
 
   return (
@@ -94,7 +63,6 @@ function ShopPage() {
             alt="Shop Banner"
             className="w-full h-full"
           />
-          <div className="absolute inset-0" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <h2 className="text-3xl font-medium mb-4">
@@ -111,9 +79,9 @@ function ShopPage() {
         {/* Product Grid Section */}
         <section className="max-w-screen-xl w-full mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 my-12">
-            {productItems.slice(0, visibleProducts).map((item, index) => (
+            {productItems.slice(0, visibleProducts).map((item) => (
               <div
-                key={index}
+                key={item._id}
                 className="bg-white rounded-lg shadow-lg p-4 h-full relative group"
               >
                 <img
@@ -136,21 +104,24 @@ function ShopPage() {
                     </p>
                   </div>
                   <h3 className="text-lg font-medium">{item.name}</h3>
-                  <p className="mt-2 text-xl font-medium">{item.price}</p>
+                  <p className="mt-2 text-xl font-medium">₹{item.price}</p>
                 </div>
 
-                {/* Add to Cart button, hidden by default and shown on hover */}
-                <button
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-black text-white font-medium rounded hover:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                >
-                  Add to Cart
-                </button>
-                {/* Add to Cart button (on hover) */}
-                {/* <div className="absolute inset-0 flex rounded-md items-center justify-center bg-zinc-800 bg-opacity-0 hover:bg-opacity-75 text-white transition-opacity opacity-0 hover:opacity-100">
-                  <button className="bg-black px-4 py-2 rounded-md">
+                {/* Hover Add to Cart Button */}
+                <div className="absolute inset-0 flex flex-col rounded-md items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-50 text-white transition-opacity opacity-0 hover:opacity-100">
+                  <button
+                    onClick={() => handleAddToCart(item._id)}
+                    className="bg-black px-4 py-2 my-4 rounded-md"
+                  >
                     Add to Cart
                   </button>
-                </div> */}
+                  <Link
+                    to={`/product/${item._id}`}
+                    className="bg-black px-4 py-2 my-4 rounded-md"
+                  >
+                    View Product
+                  </Link>
+                </div>
               </div>
             ))}
           </div>

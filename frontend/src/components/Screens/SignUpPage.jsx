@@ -1,12 +1,50 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUpPage = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); // Reset any previous errors
+
+    if (!name || !email || !password || !agreeTerms) {
+      setError("Please fill in all fields and agree to the terms.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:9000/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Redirect to the sign-in page after successful sign-up
+        navigate("/signin");
+      } else {
+        // Show the error message from the backend
+        setError(data.message || "Sign-up failed. Please try again.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -34,12 +72,16 @@ const SignUpPage = () => {
             </Link>
           </p>
 
-          <form>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+
+          <form onSubmit={handleSubmit}>
             {/* Name Field */}
             <div className="mb-6">
               <input
                 type="text"
                 placeholder="Your Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full px-3 py-2 border-b border-gray-300 focus:outline-none bg-[#f4f5f7]"
               />
             </div>
@@ -49,6 +91,8 @@ const SignUpPage = () => {
               <input
                 type="email"
                 placeholder="Your Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 border-b border-gray-300 focus:outline-none bg-[#f4f5f7]"
               />
             </div>
@@ -58,6 +102,8 @@ const SignUpPage = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Your Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 border-b border-gray-300 focus:outline-none bg-[#f4f5f7]"
               />
               <button
@@ -71,7 +117,13 @@ const SignUpPage = () => {
 
             {/* Checkbox */}
             <div className="mb-8 flex items-center">
-              <input type="checkbox" id="terms" className="mr-2" />
+              <input
+                type="checkbox"
+                id="terms"
+                checked={agreeTerms}
+                onChange={(e) => setAgreeTerms(e.target.checked)}
+                className="mr-2"
+              />
               <label htmlFor="terms" className="text-gray-700">
                 I agree with{" "}
                 <Link to="/privacy-policy" className="text-[#38cb89]">
