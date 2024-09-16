@@ -8,16 +8,17 @@ const {
   deleteProduct,
 } = require("../controllers/product.controller");
 
-const validateToken = require("../middleware/validateTokenHandler");
-const adminAuth = require("../middleware/adminAuth"); // Importing the admin middleware
+const validateToken = require("../middleware/validateTokenHandler"); // Import the token validation middleware for users
+const adminAuth = require("../middleware/adminAuth"); // Import the admin auth middleware
+const upload = require("../middleware/uploadMiddleware"); // Import the upload middleware
 
 // Public routes
-router.route("/").get(getProducts);
-router.route("/:id").get(getProduct);
+router.route("/").get(getProducts); // Get all products
+router.route("/:id").get(getProduct); // Get product by ID
 
 // Protected routes (Admin only)
-router.route("/").post(validateToken, adminAuth, postProduct);
-router.route("/:id").put(validateToken, adminAuth, updateProduct);
-router.route("/:id").delete(validateToken, adminAuth, deleteProduct);
+router.route("/").post(validateToken, adminAuth, upload, postProduct); // Add image upload middleware
+router.route("/:id").put(validateToken, adminAuth, upload, updateProduct); // Add image upload middleware
+router.route("/:id").delete(validateToken, adminAuth, deleteProduct); // Delete Product by ID
 
 module.exports = router;

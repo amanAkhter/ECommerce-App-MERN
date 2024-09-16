@@ -11,8 +11,8 @@ const validateToken = require("../middleware/validateTokenHandler");
 // Apply middleware to protect routes
 router.use(validateToken);
 
+// Routes for cart operations
 router.route("/").get(retrieveUserCart).post(addItemToCart);
 router.route("/:id").delete(removeItemFromCart);
-// router.route("/current").get(validateToken, getCurrentUser); // validating the login token to get the cuurent user data
 
 module.exports = router;

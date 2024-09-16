@@ -29,6 +29,10 @@ const productSchema = mongoose.Schema(
       required: [true, "Please add the product stock quantity"],
       default: 0,
     },
+    primaryImage: {
+      type: String, // URL or path to the primary image
+      required: false,
+    },
     images: {
       type: [String], // Array of image URLs for the product
     },

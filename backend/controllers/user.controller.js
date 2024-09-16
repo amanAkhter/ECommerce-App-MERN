@@ -11,27 +11,22 @@ const getUsers = asyncHandler(async (req, res) => {
   // Retrieve all users from the database
   const users = await User.find();
   // Return the list of products
-  res.json({
-    users: res.status(200).json(users),
-  });
+  res.status(200).json(users);
 });
 
 // @route GET /api/users/current [PRIVATE] (Gets the current User)
 const getCurrentUser = asyncHandler(async (req, res) => {
   // returns the current user as a response
-  res.json({
-    status: "Current User",
-    user: req.user,
-  });
+  res.json(req.user);
 });
 
 // @route POST /api/users/register [PUBLIC] (Registers a new User)
 const registerUser = asyncHandler(async (req, res) => {
   // extracts the values from the request body
-  const { email, password, username, role } = req.body;
+  const { email, password, name, role } = req.body;
 
   // checks if any of the fields are missing
-  if (!email || !password || !username) {
+  if (!email || !password || !name) {
     res.status(400);
     throw new Error("All fields are mandatory");
   }
@@ -42,10 +37,10 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Email is already registered! Try another one!");
   }
-  const usernameUnavailable = await User.findOne({ username });
-  if (usernameUnavailable) {
+  const nameUnavailable = await User.findOne({ name });
+  if (nameUnavailable) {
     res.status(404);
-    throw new Error("Username is already registered! Try another one!");
+    throw new Error("name is already registered! Try another one!");
   }
 
   // encrypts the password using hashing
@@ -53,7 +48,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // creates a new user with the provided details
   const user = await User.create({
-    username,
+    name,
     email,
     password: hashedPassword,
     role: role || "user", // Default to 'user' if no role is provided
@@ -88,14 +83,14 @@ const loginUser = asyncHandler(async (req, res) => {
     const accessToken = jwt.sign(
       {
         user: {
-          username: user.username,
+          name: user.name,
           email: user.email,
           id: user.id,
           role: user.role, // Include role in the token payload
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "30m" } // You can adjust the expiration time as needed
+      // { expiresIn: "30m" } // You can adjust the expiration time as needed
     );
     res.status(200).json({ accessToken: accessToken, role: user.role });
   } else {
